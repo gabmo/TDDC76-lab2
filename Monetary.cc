@@ -1,5 +1,8 @@
 #include "Monetary.h"
 #include <stdexcept>
+#include <cctype>
+#include <sstream>
+#include <cstdlib>
 
 using namespace Monetary;
 
@@ -146,7 +149,50 @@ void Money::VerifyMemberValues() const
 		throw monetary_exception(CENT_ERR);
 }
 
-std::ostream& operator<<(std::ostream& os, const Money& rhs)
+std::ostream& Monetary::operator<<(std::ostream& os, const Money& rhs)
 {
 	return rhs.print(os);	
+}
+
+std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
+{ 
+	std::string token;
+	Amount units = 0;
+	CentAmount cents = 0;
+
+	std::string currency = "";
+
+	is >> token;
+
+	if (token.length() > 0 && !isdigit(token.at(0)))
+	{
+		currency = token;
+
+		is >> token;
+	}
+
+	if (token.length() > 0)
+	{
+		std::stringstream ss(token);
+	
+		char* buffer = new char[token.length()];
+
+		ss.getline(buffer, token.length(), '.');
+		units = atoll(buffer);
+
+		if (!ss.eof())
+		{
+			ss.getline(buffer, token.length());
+			cents = atoll(buffer);
+		}
+		else
+			cents = 0;
+		
+		delete buffer;
+	}
+
+	rhs = Money(currency, units, cents);
+
+	return is;
+		
 }

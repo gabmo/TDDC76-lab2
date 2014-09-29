@@ -1,4 +1,5 @@
 #include <iostream>
+#include <sstream>
 #include "Monetary.h"
 
 using namespace std;
@@ -7,7 +8,7 @@ using namespace Monetary;
 int main()
 {
 	Money m1;
-	Money m2{"SEK", 120, 50};
+	Money m2{"", 120, 50};
 	Money m3{"SEK", 1000, 70};
 	Money m4;
 	Money m5; //	Svenska kronor: 10 kronor, 0 öre
@@ -38,4 +39,9 @@ int main()
 	*/
 
 	cout << m1.currency() << endl;
+
+	std::stringstream ss("SEK 10.50 OST 5999999999999.99"); 
+	ss >> m1;
+	ss >> m2;
+	cout << m1 << endl << m2 << endl;
 }

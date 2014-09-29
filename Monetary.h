@@ -7,11 +7,11 @@
 namespace Monetary
 {
 
-#define CENT_ERR "Hundradelarna mÃ¥ste ligga mellan noll och 99!"
-#define CURR_ERR "Valutan skall vara ospecifierad (\"\") eller tre tecken lÃ¥ng!"
-#define CURR_ASS_ERR "TvÃ¥ objekt med olika, specificerade, valutor kan ej tilldelas varandra!"
-#define CURR_ADD_ERR "Två objekt med olika, specificerade, valutor kan ej adderas!"
-#define CURR_CMP_ERR "Två objekt med olika, specificerade, valutor kan ej jämföras!"
+#define CENT_ERR "Hundradelarna mste ligga mellan noll och 99!"
+#define CURR_ERR "Valutan skall vara ospecifierad (\"\") eller tre tecken lng!"
+#define CURR_ASS_ERR "Tv objekt med olika, specificerade, valutor kan ej tilldelas varandra!"
+#define CURR_ADD_ERR "Tv objekt med olika, specificerade, valutor kan ej adderas!"
+#define CURR_CMP_ERR "Tv objekt med olika, specificerade, valutor kan ej jmfras!"
 
 
 using Amount = unsigned long long;
@@ -40,7 +40,7 @@ public:
 	
 	Money& operator++();
 	Money operator++(int);
-
+	
 private:
 	std::string currency_name;
 	Amount curr_units;
@@ -52,6 +52,7 @@ private:
 };
 
 std::ostream& operator<<(std::ostream& os, const Money& rhs);
+std::istream& operator>>(std::istream& is, Money& rhs);
 
 class monetary_exception : public std::exception
 {
