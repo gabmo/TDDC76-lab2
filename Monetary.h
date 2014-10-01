@@ -12,6 +12,7 @@ namespace Monetary
 #define CURR_ASS_ERR "Tv objekt med olika, specificerade, valutor kan ej tilldelas varandra!"
 #define CURR_ADD_ERR "Tv objekt med olika, specificerade, valutor kan ej adderas!"
 #define CURR_CMP_ERR "Tv objekt med olika, specificerade, valutor kan ej jmfras!"
+#define SIGN_ERR "Valutan får ej ha negativa värden!"
 
 
 using Amount = unsigned long long;
@@ -37,9 +38,13 @@ public:
 	bool operator<=(const Money& rhs) const;
 	bool operator>=(const Money& rhs) const;
 	bool operator!=(const Money& rhs) const;
-	
 	Money& operator++();
 	Money operator++(int);
+	Money& operator+=(const Money& rhs);
+	Money& operator--();
+	Money operator--(int);
+	Money operator-(const Money& second_term) const;
+	Money& operator-=(const Money& rhs);
 	
 private:
 	std::string currency_name;

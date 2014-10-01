@@ -138,6 +138,76 @@ Money Money::operator++(int)
   return tmp;
 }
 
+Money& Money::operator+=(const Money& rhs)
+{
+	*this = *this + rhs;
+	return *this;
+}
+
+Money& Money::operator--()
+{
+	if (curr_cents > 0)
+	{
+		curr_cents -= 1;
+		return *this;
+	}
+	else if (curr_units == 0)
+		throw monetary_exception(SIGN_ERR);
+
+	curr_units -= 1;
+	curr_cents = 99;
+
+	return *this;
+}
+
+Money Money::operator--(int)
+{
+	Money tmp(*this);
+
+	operator--();
+
+	return tmp;
+}
+
+Money Money::operator-(const Money& second_term) const
+{
+	if (currency_name.length() != 0 && second_term.currency_name.length() != 0 &&
+		currency_name.compare(second_term.currency_name) != 0)
+		throw monetary_exception(CURR_ADD_ERR);
+
+	Money tmp;
+
+	if (currency_name.length() > 0)
+		tmp.currency_name = currency_name;
+	else
+		tmp.currency_name = second_term.currency_name;
+	
+	if (curr_units < second_term.curr_units)
+		throw monetary_exception(SIGN_ERR);
+
+	if (curr_cents > second_term.curr_cents)
+	{
+		tmp.curr_cents = curr_cents - second_term.curr_cents;
+		tmp.curr_units = curr_units - second_term.curr_units;
+	}
+	else
+	{
+		if (curr_cents == second_term.curr_cents || curr_cents == 0)
+			throw monetary_exception(SIGN_ERR);
+
+		tmp.curr_cents = 100 + curr_cents - second_term.curr_cents;
+		tmp.curr_units = curr_units - second_term.curr_units - 1;
+	}
+
+	return tmp;
+}
+
+Money& Money::operator-=(const Money& rhs)
+{
+	*this = *this - rhs;
+	return *this;
+}
+
 void Money::VerifyMemberValues() const
 {
 	// Valutan skall bestå av tre tecken eller inget tecken.
