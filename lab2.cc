@@ -8,8 +8,8 @@ using namespace Monetary;
 int main()
 {
 	Money m1;
-	Money m2{"OST", 100, 00};
-	Money m3{"SEK", 1000, 10};
+	Money m2{"OST", 100, 11};
+	Money m3{"OST", 101, 10};
 	Money m4;
 	Money m5; //	Svenska kronor: 10 kronor, 0 öre
 	Money m6{"FFR", 100, 50};// Franska franc: 100 franc, 50 centimer
@@ -51,5 +51,4 @@ int main()
 	cout << (m3 - m2) << endl;
 	m3 -= m2;
 	cout << m3 << endl;
-
-}
+} 

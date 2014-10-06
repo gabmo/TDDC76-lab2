@@ -185,14 +185,14 @@ Money Money::operator-(const Money& second_term) const
 	if (curr_units < second_term.curr_units)
 		throw monetary_exception(SIGN_ERR);
 
-	if (curr_cents > second_term.curr_cents)
+	if (curr_cents >= second_term.curr_cents)
 	{
 		tmp.curr_cents = curr_cents - second_term.curr_cents;
 		tmp.curr_units = curr_units - second_term.curr_units;
 	}
 	else
 	{
-		if (curr_cents == second_term.curr_cents || curr_cents == 0)
+		if (curr_units == second_term.curr_units || curr_units == 0)
 			throw monetary_exception(SIGN_ERR);
 
 		tmp.curr_cents = 100 + curr_cents - second_term.curr_cents;
