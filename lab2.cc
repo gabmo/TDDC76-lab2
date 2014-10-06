@@ -50,5 +50,6 @@ int main()
 	cout << m2 << " " << m2-- << " " << m2 << endl;*/
 	cout << (m3 - m2) << endl;
 	m3 -= m2;
+	std::stringstream("100") >> m3;
 	cout << m3 << endl;
 } 

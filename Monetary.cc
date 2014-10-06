@@ -9,55 +9,57 @@ using namespace Monetary;
 Money::Money(const std::string& currency_name, const Amount& curr_units, const CentAmount& curr_cents) :
 currency_name(currency_name), curr_units(curr_units), curr_cents(curr_cents)
 {
-	VerifyMemberValues();
+  VerifyMemberValues();
 }
 
 Money::Money(const Amount& curr_units, const CentAmount& curr_cents) :
 curr_units(curr_units), curr_cents(curr_cents)
 {
-	currency_name = "";
+  currency_name = "";
 
-	VerifyMemberValues();
+  VerifyMemberValues();
 }
 
 std::string Money::currency() const
 {
-	return currency_name;
+  return currency_name;
 }
 
 Amount Money::GetUnits() const
 {
-	return curr_units;
+  return curr_units;
 }
 
 CentAmount Money::GetCents() const
 {
-	return curr_cents;
+  return curr_cents;
 }
 
+// Returnera strömmen som matas in så att funktionen kan returneras
+// direkt i strömoperatorn för utmatning.
 std::ostream& Money::print(std::ostream& output) const
 {
-	output << (currency_name.length() > 0 ? currency_name + ": " : "")
-		   << curr_units << "." << curr_cents;
+  output << (currency_name.length() > 0 ? currency_name + ": " : "")
+       << curr_units << "." << curr_cents;
 
-	return output;
+  return output;
 }
 
 Money& Money::operator=(const Money& rhs)
 {
-	if (rhs.currency_name.length() > 0)
-	{
-		if (currency_name.length() > 0 && currency_name.compare(rhs.currency_name) != 0)
-			throw monetary_exception(CURR_ASS_ERR);
-		
-		if (currency_name.length() == 0)
-			currency_name = rhs.currency_name;
-	}
+  if (rhs.currency_name.length() > 0)
+  {
+    if (currency_name.length() > 0 && currency_name.compare(rhs.currency_name) != 0)
+      throw monetary_exception(CURR_ASS_ERR);
+    
+    if (currency_name.length() == 0)
+      currency_name = rhs.currency_name;
+  }
 
-	curr_units = rhs.curr_units;
-	curr_cents = rhs.curr_cents;
+  curr_units = rhs.curr_units;
+  curr_cents = rhs.curr_cents;
 
-	return *this;
+  return *this;
 }
 
 Money Money::operator+(const Money& second_term) const
@@ -73,6 +75,9 @@ Money Money::operator+(const Money& second_term) const
   else
     tmp.currency_name = second_term.currency_name;
 
+  // Modluo används för att få antalet cent efter additionen
+  // och heltalsdivision används för att omvandla överflödande
+  // cents till units.
   tmp.curr_cents = (curr_cents + second_term.curr_cents) % 100;
   tmp.curr_units = (curr_units + second_term.curr_units) +
                    (curr_cents + second_term.curr_cents) / 100;
@@ -123,6 +128,8 @@ bool Money::operator!=(const Money& rhs) const
 
 Money& Money::operator++()
 {
+  // Räkna upp cents med ett och utför heltalsdivision med 100
+  // för att få det nya antalet units om överslag sker för cents.
   curr_units = curr_units + (++curr_cents / 100);
   curr_cents = curr_cents % 100;
 
@@ -140,129 +147,142 @@ Money Money::operator++(int)
 
 Money& Money::operator+=(const Money& rhs)
 {
-	*this = *this + rhs;
-	return *this;
+  *this = *this + rhs;
+  return *this;
 }
 
 Money& Money::operator--()
 {
-	if (curr_cents > 0)
-	{
-		curr_cents -= 1;
-		return *this;
-	}
-	else if (curr_units == 0)
-		throw monetary_exception(SIGN_ERR);
+  if (curr_cents > 0)
+  {
+    curr_cents -= 1;
+    return *this;
+  }
+  else if (curr_units == 0)
+    throw monetary_exception(SIGN_ERR);
 
-	curr_units -= 1;
-	curr_cents = 99;
+  curr_units -= 1;
+  curr_cents = 99;
 
-	return *this;
+  return *this;
 }
 
 Money Money::operator--(int)
 {
-	Money tmp(*this);
+  Money tmp(*this);
 
-	operator--();
+  operator--();
 
-	return tmp;
+  return tmp;
 }
 
 Money Money::operator-(const Money& second_term) const
 {
-	if (currency_name.length() != 0 && second_term.currency_name.length() != 0 &&
-		currency_name.compare(second_term.currency_name) != 0)
-		throw monetary_exception(CURR_ADD_ERR);
+  if (currency_name.length() != 0 && second_term.currency_name.length() != 0 &&
+    currency_name.compare(second_term.currency_name) != 0)
+    throw monetary_exception(CURR_ADD_ERR);
 
-	Money tmp;
+  Money tmp;
 
-	if (currency_name.length() > 0)
-		tmp.currency_name = currency_name;
-	else
-		tmp.currency_name = second_term.currency_name;
-	
-	if (curr_units < second_term.curr_units)
-		throw monetary_exception(SIGN_ERR);
+  if (currency_name.length() > 0)
+    tmp.currency_name = currency_name;
+  else
+    tmp.currency_name = second_term.currency_name;
+  
+  // Om den mest signifikanta enheten är störst blir resultatet alltid negativt
+  // och ett fel skall slängas.
+  if (curr_units < second_term.curr_units)
+    throw monetary_exception(SIGN_ERR);
 
-	if (curr_cents >= second_term.curr_cents)
-	{
-		tmp.curr_cents = curr_cents - second_term.curr_cents;
-		tmp.curr_units = curr_units - second_term.curr_units;
-	}
-	else
-	{
-		if (curr_units == second_term.curr_units || curr_units == 0)
-			throw monetary_exception(SIGN_ERR);
+  // Är antalet cents större än antalet som skall dras bort sker inget överslag
+  // och cents och units kan behandlas direkt.
+  if (curr_cents >= second_term.curr_cents)
+  {
+    tmp.curr_cents = curr_cents - second_term.curr_cents;
+    tmp.curr_units = curr_units - second_term.curr_units;
+  }
+  else
+  {
+  // Skulle nuvarande units vara like med det andra objektets units eller noll
+  // kommer slutresultatet att bli negativt om ett överslag av cents sker.
+    if (curr_units == second_term.curr_units || curr_units == 0)
+      throw monetary_exception(SIGN_ERR);
 
-		tmp.curr_cents = 100 + curr_cents - second_term.curr_cents;
-		tmp.curr_units = curr_units - second_term.curr_units - 1;
-	}
+  // Låna 100 cents från units och utför subtraktionen, ty överslag har skett.
+    tmp.curr_cents = 100 + curr_cents - second_term.curr_cents;
+    tmp.curr_units = curr_units - second_term.curr_units - 1;
+  }
 
-	return tmp;
+  return tmp;
 }
 
 Money& Money::operator-=(const Money& rhs)
 {
-	*this = *this - rhs;
-	return *this;
+  *this = *this - rhs;
+  return *this;
 }
 
 void Money::VerifyMemberValues() const
 {
-	// Valutan skall bestå av tre tecken eller inget tecken.
-	if (currency_name.length() != 3 && currency_name.length() != 0)
-		throw monetary_exception(CURR_ERR);	
-	
-	// Hundradelarna måste ligga mellan noll och 99.
-	if (curr_cents > 99)
-		throw monetary_exception(CENT_ERR);
+  // Valutan skall bestå av tre tecken eller inget tecken.
+  if (currency_name.length() != 3 && currency_name.length() != 0)
+    throw monetary_exception(CURR_ERR);  
+  
+  // Hundradelarna måste ligga mellan noll och 99.
+  if (curr_cents > 99)
+    throw monetary_exception(CENT_ERR);
 }
 
 std::ostream& Monetary::operator<<(std::ostream& os, const Money& rhs)
 {
-	return rhs.print(os);	
+  return rhs.print(os);  
 }
 
 std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
 { 
-	std::string token;
-	Amount units = 0;
-	CentAmount cents = 0;
+  std::string token;
+  Amount units = 0;
+  CentAmount cents = 0;
 
-	std::string currency = "";
+  std::string currency = "";
 
-	is >> token;
+  is >> token;
+  
+  // Avgör om den inlästa strängen är ett numeriskt värde eller
+  // en textsträng som representerar en valuta.
+  if (token.length() > 0 && !isdigit(token.at(0)))
+  {
+    currency = token;
 
-	if (token.length() > 0 && !isdigit(token.at(0)))
-	{
-		currency = token;
+    is >> token;
+  }
 
-		is >> token;
-	}
+  if (token.length() > 0)
+  {
+    std::stringstream ss(token);
+  
+	std::string buffer;
 
-	if (token.length() > 0)
-	{
-		std::stringstream ss(token);
-	
-		char* buffer = new char[token.length()];
+    // Här vet vi att vi skall ha ett numeriskt värde så dela strängen
+    // på decimaltecknet för att få decimaler och heltal separat.
+	std::getline(ss, buffer, '.');
+    units = atoll(buffer.c_str());
+  
+	std::cout << token << std::endl << buffer << std::endl;
 
-		ss.getline(buffer, token.length(), '.');
-		units = atoll(buffer);
+    // Om vi inte har nått slutet av strömmen har vi decimaler också och i
+    // sådana fall läser vi in dem.
+    if (!ss.eof())
+    {
+      std::getline(ss, buffer);
+      cents = atoll(buffer.c_str());
+    }
+    else
+      cents = 0;
+  }
 
-		if (!ss.eof())
-		{
-			ss.getline(buffer, token.length());
-			cents = atoll(buffer);
-		}
-		else
-			cents = 0;
-		
-		delete buffer;
-	}
+  rhs = Money(currency, units, cents);
 
-	rhs = Money(currency, units, cents);
-
-	return is;
-		
+  return is;
+    
 }
