@@ -2,7 +2,6 @@
 #include <stdexcept>
 #include <cctype>
 #include <sstream>
-#include <cstdlib>
 
 using namespace Monetary;
 
@@ -40,7 +39,7 @@ CentAmount Money::GetCents() const
 std::ostream& Money::print(std::ostream& output) const
 {
   output << (currency_name.length() > 0 ? currency_name + ": " : "")
-       << curr_units << "." << curr_cents;
+         << curr_units << "." << curr_cents;
 
   return output;
 }
@@ -203,12 +202,12 @@ Money Money::operator-(const Money& second_term) const
   }
   else
   {
-  // Skulle nuvarande units vara like med det andra objektets units eller noll
-  // kommer slutresultatet att bli negativt om ett överslag av cents sker.
+    // Skulle nuvarande units vara like med det andra objektets units eller noll
+    // kommer slutresultatet att bli negativt om ett överslag av cents sker.
     if (curr_units == second_term.curr_units || curr_units == 0)
       throw monetary_exception(SIGN_ERR);
 
-  // Låna 100 cents från units och utför subtraktionen, ty överslag har skett.
+    // Låna 100 cents från units och utför subtraktionen, ty överslag har skett.
     tmp.curr_cents = 100 + curr_cents - second_term.curr_cents;
     tmp.curr_units = curr_units - second_term.curr_units - 1;
   }
@@ -248,17 +247,17 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
 
   is >> token;
   
-  // Avgör om den inlästa strängen är ett numeriskt värde eller
-  // en textsträng som representerar en valuta.
-  if (token.length() > 0 && !isdigit(token.at(0)))
-  {
-    currency = token;
-
-    is >> token;
-  }
-
   if (token.length() > 0)
   {
+    // Avgör om den inlästa strängen är ett numeriskt värde eller
+    // en textsträng som representerar en valuta.
+    if (!isdigit(token.at(0)))
+    {
+      currency = token;
+
+      is >> token;
+    }
+
     std::stringstream ss(token);
   
 	std::string buffer;
@@ -266,16 +265,13 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
     // Här vet vi att vi skall ha ett numeriskt värde så dela strängen
     // på decimaltecknet för att få decimaler och heltal separat.
 	std::getline(ss, buffer, '.');
-    units = atoll(buffer.c_str());
+	std::stringstream(buffer) >> units;
   
-	std::cout << token << std::endl << buffer << std::endl;
-
     // Om vi inte har nått slutet av strömmen har vi decimaler också och i
     // sådana fall läser vi in dem.
     if (!ss.eof())
     {
-      std::getline(ss, buffer);
-      cents = atoll(buffer.c_str());
+	  ss >> cents;
     }
     else
       cents = 0;
