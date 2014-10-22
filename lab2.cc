@@ -74,18 +74,27 @@ int main()
 	m8.print(cout);
 	cout << endl;
 
+	cout << m1.currency() << endl;
+	cout << m2.currency() << endl;
+
 	// Tilldelning
 	cout << endl << "Tilldelning" << endl;
 	cout << "FÃ¶re tilldelning:" << endl;
-	cout << m5 << endl << m4 << endl;
-
+	cout << m9 << endl << m5 << endl << m4 << endl;
+	
+	m9 += m5;
 	m5 = m4;
 
 	cout << "Efter tilldelning:" << endl;
-	cout << m5 << endl << m4 << endl << endl;
+	cout << m9 << endl << m5 << endl << m4 << endl << endl;
 
 	try
 	  { m2 = m5; } // Olika valutor
+	catch (const monetary_exception e)
+	  { cout << "Undantag fangat: " << e.what() << endl; }
+
+	try
+	  { m9 += m2; } // Olika valutor
 	catch (const monetary_exception e)
 	  { cout << "Undantag fangat: " << e.what() << endl; }
 
@@ -121,32 +130,36 @@ int main()
 
 
 	// Stegning
+	cout << endl << "Stegning" << endl;
+	cout << m1 << endl;
+	cout << ++m1 << endl;
+	cout << m1++ << endl;
+	cout << m1 << endl;
 
-       
+	//Inläsning
+	cout << endl << "Inlasning" << endl;
+	std::stringstream ss("SEK 10.50 OST 599.99"); 
+	ss >> m1;
+	ss >> m2;
+	cout << m1 << endl << m2 << endl;
+
+	cout << endl;
+
+	try
+	{
+	  std::stringstream ss("SVENSKAKR 10.50 OST 599.99"); // För långt namn
+	    ss >> m1;
+	    ss >> m2;
+	    cout << m1 << endl << m2 << endl;
+        }
+	catch (const monetary_exception e)
+	  { cout << "Undantag fangat: " << e.what() << endl; }
+
 	
 	
     }
   catch (monetary_exception e)
     { cout << "Se over testfilen, detta undantag var inte planerat, fangade: " << e.what() << endl; }
-	
-	
-	
-	/*
-	std::stringstream ss("SEK 10.50 OST 5999999999999.99"); 
-	ss >> m1;
-	ss >> m2;
-	cout << m1 << endl << m2 << endl;
-	*/
-	/*cout << (m2 + m3) << endl;
-	cout  << m2 << " " << --m2 << endl;
-	cout << m2 << " " << m2-- << " " << m2 << endl;*/
-  /*
-	cout << (m3 - m2) << endl;
-	m3 -= m2;
-	cout << m3 << endl;
-	std::stringstream("") >> m3;
-	cout << m3 << endl;
-  */
 } 
 
 
