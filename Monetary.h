@@ -18,7 +18,7 @@ namespace Monetary
 #define COMMA_ERR "Kommatecken maste foljas av en siffra!"
 #define UNKNOWN_STREAM_ERR "Ett okant fel uppstod i strominlasningen!"
 
-// Även om vi inte ska kunna ha negativa tal tillater vi det i datatypen 
+// Även om vi inte ska kunna ha negativa tal tillater vi det i datatypen
 // for att kunna anpassa felhanteringen.
 using Amount = long long;
 using CentAmount = short;
@@ -53,7 +53,7 @@ public:
 
 private:
     std::string currency_name;
- 
+
     Amount curr_units;
     CentAmount curr_cents;
 

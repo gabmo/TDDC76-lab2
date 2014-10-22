@@ -84,7 +84,7 @@ Money Money::operator+(const Money& second_term) const
 
 bool Money::operator<(const Money& rhs) const
 {
-        VerifyOperation(rhs, CURR_CMP_ERR);
+    VerifyOperation(rhs, CURR_CMP_ERR);
 
     if (curr_units == rhs.curr_units)
         return curr_cents < rhs.curr_cents;
@@ -221,9 +221,9 @@ void Money::VerifyMemberValues() const
 
     // Vi är en solid bank som bara tillåters positivia konton.
     if (curr_units < 0)
-      throw monetary_exception(SIGN_ERR);
+        throw monetary_exception(SIGN_ERR);
 
-    // Hundradelarna måste ligga mellan noll och 99. 
+    // Hundradelarna måste ligga mellan noll och 99.
     if (curr_cents < 0 || curr_cents > 99)
         throw monetary_exception(CENT_ERR);
 }
@@ -233,7 +233,7 @@ void Money::VerifyOperation(const Money& second_term, const std::string error) c
     if (currency_name.length() != 0 && second_term.currency_name.length() != 0 &&
             currency_name.compare(second_term.currency_name) != 0)
         throw monetary_exception(error);
-    
+
 }
 
 std::ostream& Monetary::operator<<(std::ostream& os, const Money& rhs)
@@ -247,12 +247,12 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
     std::string stringbuff = "";
     Amount units = 0;
     CentAmount cents = 0;
-    
-    // Läs förbi eventuella mellanslag. 
-    is >> std::ws; 
+
+    // Läs förbi eventuella mellanslag.
+    is >> std::ws;
 
     // Kika på det första tecknet för att se om det är en
-    // valuta eller om det är ett numeriskt värde. 
+    // valuta eller om det är ett numeriskt värde.
     // Vi kräver att valutor börjar på en bokstav.
     char buff = is.peek();
 
@@ -277,11 +277,11 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
         // Ta bort mellanslag innan valutan.
         is >> std::ws;
     }
-    
+
     // Kika på första tecknet vid valutan.
     buff = is.peek();
 
-    // Negativa tal är ej tillåtna och det måste vara ett tal angivet. 
+    // Negativa tal är ej tillåtna och det måste vara ett tal angivet.
     // Avbryt inläsningen och sätt failbit.
     if (buff == '-' || !isdigit(buff))
     {
@@ -290,15 +290,15 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
     }
 
     // Läs till punkt, vitt tecken, bokstav eller strömmens slut.
-    while (is.peek() != '.' && !isspace(is.peek()) && 
-           !is.eof() && isdigit(is.peek()))
+    while (is.peek() != '.' && !isspace(is.peek()) &&
+            !is.eof() && isdigit(is.peek()))
     {
         is.get(buff);
         stringbuff += buff;
     }
 
     units = atoi(stringbuff.c_str());
-    
+
     // Rensa buffern.
     stringbuff = "";
 
@@ -307,8 +307,8 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
     {
         // Läs förbi punkten.
         is.get(buff);
-        
-        // Vi måste läsa in åtminstone en siffra efter kommatecknet.   
+
+        // Vi måste läsa in åtminstone en siffra efter kommatecknet.
         if (is.eof())
         {
             is.setstate(std::ios_base::failbit);
@@ -325,8 +325,8 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
         for (short i = 0; i < 2; ++i)
         {
             is.get(buff);
-            stringbuff += buff; 
-            
+            stringbuff += buff;
+
             // Om strömmens slut har nåtts avbryter vi.
             if (is.eof())
                 break;
@@ -339,7 +339,7 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
     // Om ett fel vi inte sett har inträffat i den underliggande strömmen
     // returnernar vi utan att konstruera ett Money-objekt.
     if (is.fail())
-        throw monetary_exception(UNKNOWN_STREAM_ERR); 
+        throw monetary_exception(UNKNOWN_STREAM_ERR);
 
     rhs = Money(currency, units, cents);
 
