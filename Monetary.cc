@@ -291,12 +291,12 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
         is >> std::ws;
     }
 
-    // Kika på första tecknet vid valutan.
+    // Kika på första tecknet vid värdet.
     buff = is.peek();
 
     // Negativa tal är ej tillåtna och det måste vara ett tal angivet.
     // Avbryt inläsningen och sätt failbit.
-    if (buff == '-' || !isdigit(buff))
+    if (!isdigit(buff))
     {
         is.setstate(std::ios_base::failbit);
         throw monetary_exception(CHAR_ERR);
@@ -304,7 +304,7 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
 
     // Läs till punkt, vitt tecken, bokstav eller strömmens slut.
     while (is.peek() != '.' && !isspace(is.peek()) &&
-            !is.eof() && isdigit(is.peek()))
+           !is.eof() && isdigit(is.peek()))
     {
         is.get(buff);
         stringbuff += buff;
