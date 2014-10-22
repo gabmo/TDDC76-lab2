@@ -243,43 +243,103 @@ std::ostream& Monetary::operator<<(std::ostream& os, const Money& rhs)
 
 std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
 {
-    std::string token;
+    std::string currency = "";
+    std::string stringbuff = "";
     Amount units = 0;
     CentAmount cents = 0;
+    
+    // Läs förbi eventuella mellanslag. 
+    is >> std::ws; 
 
-    std::string currency = "";
+    // Kika på det första tecknet för att se om det är en
+    // valuta eller om det är ett numeriskt värde. 
+    // Vi kräver att valutor börjar på en bokstav.
+    char buff = is.peek();
 
-    is >> token;
-
-    if (token.length() > 0)
+    // Om första tecknet inte är en siffra har vi en valuta.
+    if (!isdigit(buff))
     {
-        // Avgör om den inlästa strängen är ett numeriskt värde eller
-        // en textsträng som representerar en valuta.
-        if (!isdigit(token.at(0)))
+        // En valuta skall vara tre tecken lång.
+        for (short i = 0; i < 3; ++i)
         {
-            currency = token;
+            is.get(buff);
+            currency += buff;
 
-            is >> token;
+            // Nås slutet av strömmen innan tre tecken matats in
+            // har en felaktit sträng matats in.
+            if (is.eof())
+            {
+                is.setstate(std::ios_base::failbit);
+                return is;
+            }
         }
 
-        std::stringstream ss(token);
-
-        std::string buffer;
-
-        // Här vet vi att vi skall ha ett numeriskt värde så dela strängen
-        // på decimaltecknet för att få decimaler och heltal separat.
-        std::getline(ss, buffer, '.');
-        std::stringstream(buffer) >> units;
-
-        // Om vi inte har nått slutet av strömmen har vi decimaler också och i
-        // sådana fall läser vi in dem.
-        if (!ss.eof())
-        {
-            ss >> cents;
-        }
-        else
-            cents = 0;
+        // Ta bort mellanslag innan valutan.
+        is >> std::ws;
     }
+    
+    // Kika på första tecknet vid valutan.
+    buff = is.peek();
+
+    // Negativa tal är ej tillåtna och det måste vara ett tal angivet. 
+    // Avbryt inläsningen och sätt failbit.
+    if (buff == '-' || !isdigit(buff))
+    {
+        is.setstate(std::ios_base::failbit);
+        return is;
+    }
+
+    // Läs till punkt, vitt tecken, bokstav eller strömmens slut.
+    while (is.peek() != '.' && !isspace(is.peek()) && 
+           !is.eof() && isdigit(is.peek()))
+    {
+        is.get(buff);
+        stringbuff += buff;
+    }
+
+    units = atoi(stringbuff.c_str());
+    
+    // Rensa buffern.
+    stringbuff = "";
+
+    // Om vi har decimaler läser vi in dem.
+    if (is.peek() == '.')
+    {
+        // Läs förbi punkten.
+        is.get(buff);
+        
+        // Vi måste läsa in åtminstone en siffra efter kommatecknet.   
+        if (is.eof())
+        {
+            is.setstate(std::ios_base::failbit);
+            return is;
+        }
+
+        // Tecknet precis efter kommatecknet måste vara en siffra.
+        if (!isdigit(is.peek()))
+        {
+            is.setstate(std::ios_base::failbit);
+            return is;
+        }
+
+        for (short i = 0; i < 2; ++i)
+        {
+            is.get(buff);
+            stringbuff += buff; 
+            
+            // Om strömmens slut har nåtts avbryter vi.
+            if (is.eof())
+                break;
+        }
+
+        cents = atoi(stringbuff.c_str());
+    }
+
+
+    // Om ett fel vi inte sett har inträffat i den underliggande strömmen
+    // returnernar vi utan att konstruera ett Money-objekt.
+    if (is.fail())
+        return is;
 
     rhs = Money(currency, units, cents);
 

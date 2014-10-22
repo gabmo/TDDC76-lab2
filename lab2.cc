@@ -119,6 +119,7 @@ int main()
 	catch (const monetary_exception e)
 	  { cout << "Undantag fangat: " << e.what() << endl; }
 
+
 	// Stegning
 
        
