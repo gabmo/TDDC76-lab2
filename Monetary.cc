@@ -63,9 +63,7 @@ Money& Money::operator=(const Money& rhs)
 
 Money Money::operator+(const Money& second_term) const
 {
-    if (currency_name.length() != 0 && second_term.currency_name.length() != 0 &&
-            currency_name.compare(second_term.currency_name) != 0)
-        throw monetary_exception(CURR_ADD_ERR);
+    VerifyOperation(second_term, std::string(CURR_ADD_ERR));
 
     Money tmp;
 
@@ -86,9 +84,7 @@ Money Money::operator+(const Money& second_term) const
 
 bool Money::operator<(const Money& rhs) const
 {
-    if (currency_name.length() != 0 && rhs.currency_name.length() != 0 &&
-            currency_name.compare(rhs.currency_name) != 0)
-        throw monetary_exception(CURR_CMP_ERR);
+        VerifyOperation(rhs, std::string(CURR_CMP_ERR));
 
     if (curr_units == rhs.curr_units)
         return curr_cents < rhs.curr_cents;
@@ -98,9 +94,7 @@ bool Money::operator<(const Money& rhs) const
 
 bool Money::operator==(const Money& rhs) const
 {
-    if (currency_name.length() != 0 && rhs.currency_name.length() != 0 &&
-            currency_name.compare(rhs.currency_name) != 0)
-        throw monetary_exception(CURR_CMP_ERR);
+    VerifyOperation(rhs, std::string(CURR_CMP_ERR));
 
     return curr_cents == rhs.curr_cents && curr_units == rhs.curr_units;
 }
@@ -177,9 +171,7 @@ Money Money::operator--(int)
 
 Money Money::operator-(const Money& second_term) const
 {
-    if (currency_name.length() != 0 && second_term.currency_name.length() != 0 &&
-            currency_name.compare(second_term.currency_name) != 0)
-        throw monetary_exception(CURR_ADD_ERR);
+    VerifyOperation(second_term, std::string(CURR_ADD_ERR));
 
     Money tmp;
 
@@ -234,6 +226,14 @@ void Money::VerifyMemberValues() const
     // Hundradelarna måste ligga mellan noll och 99. 
     if (curr_cents < 0 || curr_cents > 99)
         throw monetary_exception(CENT_ERR);
+}
+
+void Money::VerifyOperation(const Money& second_term, const std::string error) const
+{
+    if (currency_name.length() != 0 && second_term.currency_name.length() != 0 &&
+            currency_name.compare(second_term.currency_name) != 0)
+        throw monetary_exception(error);
+    
 }
 
 std::ostream& Monetary::operator<<(std::ostream& os, const Money& rhs)

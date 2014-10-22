@@ -56,6 +56,8 @@ private:
     // Funktionen verifierar att klassens medlemsvariabler har
     // korrekta värden och slänger fel om så ej är fallet.
     void VerifyMemberValues() const;
+
+    void VerifyOperation(const Money& second_term, const std::string error) const;
 };
 
 std::ostream& operator<<(std::ostream& os, const Money& rhs);
