@@ -34,6 +34,7 @@ int main()
 	Money m7{m6}; // Franska franc: 100 franc, 50 centimer
 	Money m8{m1};
 	Money m9{"SEK", 1000, 80};
+	Money m99{"SEK", 20};
 
 	try
 	  { Money m10{"USD", 10, 100}; } // För mycket cents
@@ -80,13 +81,14 @@ int main()
 	// Tilldelning
 	cout << endl << "Tilldelning" << endl;
 	cout << "FÃ¶re tilldelning:" << endl;
-	cout << m9 << endl << m5 << endl << m4 << endl;
+	cout << m99 << endl <<m9 << endl << m5 << endl << m4 << endl;
 	
+	m99 -= m5;
 	m9 += m5;
 	m5 = m4;
 
 	cout << "Efter tilldelning:" << endl;
-	cout << m9 << endl << m5 << endl << m4 << endl << endl;
+	cout << m99 << endl << m9 << endl << m5 << endl << m4 << endl << endl;
 
 	try
 	  { m2 = m5; } // Olika valutor
@@ -97,6 +99,13 @@ int main()
 	  { m9 += m2; } // Olika valutor
 	catch (const monetary_exception e)
 	  { cout << "Undantag fangat: " << e.what() << endl; }
+
+	try
+	  { m99 -= m9; } // Blir negativt
+	catch (const monetary_exception e)
+	  { cout << "Undantag fangat: " << e.what() << endl; }
+
+	
 
 	// Addition
 	cout << endl << "Addition" << endl;
@@ -134,7 +143,40 @@ int main()
 	cout << m1 << endl;
 	cout << ++m1 << endl;
 	cout << m1++ << endl;
+	cout << m1 << endl << endl;
+
 	cout << m1 << endl;
+	cout << --m1 << endl;
+	cout << m1-- << endl;
+	cout << m1 << endl << endl;
+       
+	try
+	  { cout << m1--; } // Blir negativt
+	catch (const monetary_exception e)
+	  { cout << "Undantag fangat: " << e.what() << endl; }
+
+	try
+	  { cout << --m1; } // Blir negativt
+	catch (const monetary_exception e)
+	  { cout << "Undantag fangat: " << e.what() << endl; }
+
+	// Subtraktion
+	cout << endl << "Subtraktion" << endl;
+	cout << (m3 - m2) << endl;
+	cout << (m3 - m1) << endl << endl;
+
+	try
+	  { cout << (m2 - m3); } // Blir negativt
+	catch (const monetary_exception e)
+	  { cout << "Undantag fangat: " << e.what() << endl; }
+
+	try
+	  { cout << (m2 - m5); } // Blir negativt
+	catch (const monetary_exception e)
+	  { cout << "Undantag fangat: " << e.what() << endl; }
+
+	
+	    
 
 	//Inläsning
 	cout << endl << "Inlasning" << endl;
@@ -145,17 +187,91 @@ int main()
 
 	cout << endl;
 
+	std::stringstream ss2("SEK10.50OST599.99"); 
+	ss2 >> m1;
+	ss2 >> m2;
+	cout << m1 << endl << m2 << endl;
+
+	cout << endl;
+
 	try
 	{
-	  std::stringstream ss("SVENSKAKR 10.50 OST 599.99"); // För långt namn
+	    ss.str("SVENSKAKR 10.50 OST 599.99"); // För långt namn
 	    ss >> m1;
 	    ss >> m2;
 	    cout << m1 << endl << m2 << endl;
         }
 	catch (const monetary_exception e)
-	  { cout << "Undantag fangat: " << e.what() << endl; }
+	  {
+	    cout << "Undantag fangat: " << e.what() << endl << "Failbit: " << ss.fail() << endl;
+	    ss.clear();
+	  }
 
-	
+	try
+	{
+	   ss.str("SEK -10.50 OST 599.99"); // Negativt värde
+	    ss >> m1;
+	    ss >> m2;
+	    cout << m1 << endl << m2 << endl;
+        }
+	catch (const monetary_exception e)
+	  {
+	    cout << "Undantag fangat: " << e.what() << endl << "Failbit: " << ss.fail() << endl;
+	    ss.clear();
+	  }
+
+	try
+	{
+	   ss.str("SEK 10.A OST 599.99"); // Ogiltiga cent
+	    ss >> m1;
+	    ss >> m2;
+	    cout << m1 << endl << m2 << endl;
+        }
+	catch (const monetary_exception e)
+	  {
+	    cout << "Undantag fangat: " << e.what() << endl << "Failbit: " << ss.fail() << endl;
+	    ss.clear();
+	  }
+
+	try
+	{
+	   ss.str("SEK A.50 OST 599.99"); // Ogiltigt värde
+	    ss >> m1;
+	    ss >> m2;
+	    cout << m1 << endl << m2 << endl;
+        }
+	catch (const monetary_exception e)
+	{
+	    cout << "Undantag fangat: " << e.what() << endl << "Failbit: " << ss.fail() << endl;
+	    ss.clear();
+        }
+
+	try
+	{
+	   ss.str("SEK .50 OST 599.99"); // Värde saknas
+	    ss >> m1;
+	    ss >> m2;
+	    cout << m1 << endl << m2 << endl;
+        }
+	catch (const monetary_exception e)
+	  {
+	    cout << "Undantag fangat: " << e.what() << endl << "Failbit: " << ss.fail() << endl;
+	    ss.clear();
+	  }
+
+       
+       	try // En "oönskad" begränsning i vårt system
+	{
+	   ss.str("SEK 10.50 OST 5999999999999999.99"); // Orsakar overflow
+	    ss >> m1;
+	    ss >> m2;
+	    cout << m1 << endl << m2 << endl;
+        }
+	catch (const monetary_exception e)
+	  {
+	    cout << "Undantag fangat: " << e.what() << endl << "Failbit: " << ss.fail() << endl;
+	    ss.clear();
+	  }
 	
     }
   catch (monetary_exception e)
