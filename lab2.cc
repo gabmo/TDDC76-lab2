@@ -51,22 +51,36 @@ int main()
 	cout << m7 << endl << m8 << endl << m3 << endl;
 
 	*/
-	/*
-	cout << m1.currency() << endl;
+	
+	//cout << m1.currency() << endl;
+    
+    Money in1, in2;
+	std::stringstream ss("10.10ostar20.00"); 
+	cin >> in1;
 
-	std::stringstream ss("SEK 10.50 OST 5999999999999.99"); 
-	ss >> m1;
-	ss >> m2;
-	cout << m1 << endl << m2 << endl;
-	*/
+    if (ss.fail())
+        cout << "in1 fail!" << endl;
+
+	cin >> in2;
+
+    if (ss.fail())
+        cout << "in2 fail!" << endl;
+
+	cout << "in1: " << in1 << endl << "in2: " << in2 << endl;
+    
+    string buffer = "";
+    buffer += cin.peek();
+
+    cout << buffer << endl;
+	
 	/*cout << (m2 + m3) << endl;
 	cout  << m2 << " " << --m2 << endl;
-	cout << m2 << " " << m2-- << " " << m2 << endl;*/
+	cout << m2 << " " << m2-- << " " << m2 << endl;
 	cout << (m3 - m2) << endl;
 	m3 -= m2;
 	cout << m3 << endl;
 	std::stringstream("") >> m3;
-	cout << m3 << endl;
+	cout << m3 << endl;*/
 } 
 
 
