@@ -270,7 +270,7 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
             if (is.eof())
             {
                 is.setstate(std::ios_base::failbit);
-                return is;
+                throw monetary_exception(EOF_ERR);
             }
         }
 
@@ -286,7 +286,7 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
     if (buff == '-' || !isdigit(buff))
     {
         is.setstate(std::ios_base::failbit);
-        return is;
+        throw monetary_exception(CHAR_ERR);
     }
 
     // Läs till punkt, vitt tecken, bokstav eller strömmens slut.
@@ -312,14 +312,14 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
         if (is.eof())
         {
             is.setstate(std::ios_base::failbit);
-            return is;
+            throw monetary_exception(COMMA_ERR);
         }
 
         // Tecknet precis efter kommatecknet måste vara en siffra.
         if (!isdigit(is.peek()))
         {
             is.setstate(std::ios_base::failbit);
-            return is;
+            throw monetary_exception(COMMA_ERR);
         }
 
         for (short i = 0; i < 2; ++i)
@@ -339,7 +339,7 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
     // Om ett fel vi inte sett har inträffat i den underliggande strömmen
     // returnernar vi utan att konstruera ett Money-objekt.
     if (is.fail())
-        return is;
+        throw monetary_exception(UNKNOWN_STREAM_ERR); 
 
     rhs = Money(currency, units, cents);
 

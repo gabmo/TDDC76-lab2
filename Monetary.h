@@ -7,15 +7,19 @@
 namespace Monetary
 {
 
-#define CENT_ERR "Hundradelarna mste ligga mellan noll och 99!"
-#define CURR_ERR "Valutan skall vara ospecifierad (\"\") eller tre tecken lng!"
-#define CURR_ASS_ERR "Tv objekt med olika, specificerade, valutor kan ej tilldelas varandra!"
-#define CURR_ADD_ERR "Tv objekt med olika, specificerade, valutor kan ej adderas!"
-#define CURR_CMP_ERR "Tv objekt med olika, specificerade, valutor kan ej jmfras!"
-#define SIGN_ERR "Valutan fÃ¥r ej ha negativa vÃ¤rden!"
+#define CENT_ERR "Hundradelarna maste ligga mellan noll och 99!"
+#define CURR_ERR "Valutan skall vara ospecifierad (\"\") eller tre tecken lang!"
+#define CURR_ASS_ERR "Tva objekt med olika, specificerade, valutor kan ej tilldelas varandra!"
+#define CURR_ADD_ERR "Tva objekt med olika, specificerade, valutor kan ej adderas!"
+#define CURR_CMP_ERR "Tva objekt med olika, specificerade, valutor kan ej jamforas!"
+#define SIGN_ERR "Valutan far ej ha negativa varden!"
+#define EOF_ERR "Ovantat slut pa strommen!"
+#define CHAR_ERR "Negativa tal och symboler som inte ar siffror ar ej tillatna som varde!"
+#define COMMA_ERR "Kommatecken maste foljas av en siffra!"
+#define UNKNOWN_STREAM_ERR "Ett okant fel uppstod i strominlasningen!"
 
-// Även om vi inte ska kunna ha negativa tal tillåter vi det i datatypen 
-// för att kunna anpassa felhanteringen.
+// Även om vi inte ska kunna ha negativa tal tillater vi det i datatypen 
+// for att kunna anpassa felhanteringen.
 using Amount = long long;
 using CentAmount = short;
 
