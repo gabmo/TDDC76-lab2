@@ -5,8 +5,8 @@
  *                Karl Larsson 891114-1938 yi3
  * DATUM:         2014-10-22
  *
- * BESKRIVNING 
- * 
+ * BESKRIVNING
+ *
  * Definition av klassen Monetary
  * som hanterar valutor och saldon.
  */
@@ -304,7 +304,7 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
 
     // Läs till punkt, vitt tecken, bokstav eller strömmens slut.
     while (is.peek() != '.' && !isspace(is.peek()) &&
-           !is.eof() && isdigit(is.peek()))
+            !is.eof() && isdigit(is.peek()))
     {
         is.get(buff);
         stringbuff += buff;

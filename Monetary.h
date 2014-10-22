@@ -5,8 +5,8 @@
  *                Karl Larsson 891114-1938 yi3
  * DATUM:         2014-10-22
  *
- * BESKRIVNING 
- * 
+ * BESKRIVNING
+ *
  * Deklaration av klassen Monetary
  * som hanterar valutor och saldon.
  */

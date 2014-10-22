@@ -324,10 +324,10 @@ int main()
             cout << "Undantag fangat: " << e.what() << endl << "Failbit: " << ss.fail() << endl;
             ss.clear();
         }
-        
-		try // Inläsningsoperator får ej byta valuta på ett Moneyobjekt.
+
+        try // Inläsningsoperator får ej byta valuta på ett Moneyobjekt.
         {
-			m1 = Money("FFR");
+            m1 = Money("FFR");
             ss.str("SEK 10.50 OST 59.99");
             ss >> m1;
             ss >> m2;
