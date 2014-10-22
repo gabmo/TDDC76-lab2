@@ -1,3 +1,16 @@
+/*
+ * FILNAMN:       lab2.cc
+ * LABORATION:    2
+ * PROGRAMMERARE: Andreas Kempe 920607-1210 yi3
+ *                Karl Larsson 891114-1938 yi3
+ * DATUM:         2014-10-22
+ *
+ * BESKRIVNING 
+ * 
+ * Testprogram för klassen Monetary.
+ */
+
+
 #include <iostream>
 #include <sstream>
 #include "Monetary.h"
@@ -7,6 +20,7 @@ using namespace Monetary;
 
 int main()
 {
+  
 	Money m1;
 	Money m2{"OST", 100, 11};
 	Money m3{"OST", 101, 10};
