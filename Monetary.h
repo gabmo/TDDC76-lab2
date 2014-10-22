@@ -1,3 +1,16 @@
+/*
+ * FILNAMN:       Monetary.h
+ * LABORATION:    2
+ * PROGRAMMERARE: Andreas Kempe 920607-1210 yi3
+ *                Karl Larsson 891114-1938 yi3
+ * DATUM:         2014-10-22
+ *
+ * BESKRIVNING 
+ * 
+ * Deklaration av klassen Monetary
+ * som hanterar valutor och saldon.
+ */
+
 #ifndef MONETARY_H
 #define MONETARY_H
 
