@@ -324,6 +324,20 @@ int main()
             cout << "Undantag fangat: " << e.what() << endl << "Failbit: " << ss.fail() << endl;
             ss.clear();
         }
+        
+		try // Inläsningsoperator får ej byta valuta på ett Moneyobjekt.
+        {
+			m1 = Money("FFR");
+            ss.str("SEK 10.50 OST 59.99");
+            ss >> m1;
+            ss >> m2;
+            cout << m1 << endl << m2 << endl;
+        }
+        catch (const monetary_exception e)
+        {
+            cout << "Undantag fangat: " << e.what() << endl << "Failbit: " << ss.fail() << endl;
+            ss.clear();
+        }
 
     }
     catch (monetary_exception e)
