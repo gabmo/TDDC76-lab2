@@ -63,9 +63,7 @@ Money& Money::operator=(const Money& rhs)
 
 Money Money::operator+(const Money& second_term) const
 {
-    if (currency_name.length() != 0 && second_term.currency_name.length() != 0 &&
-            currency_name.compare(second_term.currency_name) != 0)
-        throw monetary_exception(CURR_ADD_ERR);
+    VerifyOperation(second_term, CURR_ADD_ERR);
 
     Money tmp;
 
@@ -86,9 +84,7 @@ Money Money::operator+(const Money& second_term) const
 
 bool Money::operator<(const Money& rhs) const
 {
-    if (currency_name.length() != 0 && rhs.currency_name.length() != 0 &&
-            currency_name.compare(rhs.currency_name) != 0)
-        throw monetary_exception(CURR_CMP_ERR);
+        VerifyOperation(rhs, CURR_CMP_ERR);
 
     if (curr_units == rhs.curr_units)
         return curr_cents < rhs.curr_cents;
@@ -98,9 +94,7 @@ bool Money::operator<(const Money& rhs) const
 
 bool Money::operator==(const Money& rhs) const
 {
-    if (currency_name.length() != 0 && rhs.currency_name.length() != 0 &&
-            currency_name.compare(rhs.currency_name) != 0)
-        throw monetary_exception(CURR_CMP_ERR);
+    VerifyOperation(rhs, CURR_CMP_ERR);
 
     return curr_cents == rhs.curr_cents && curr_units == rhs.curr_units;
 }
@@ -177,9 +171,7 @@ Money Money::operator--(int)
 
 Money Money::operator-(const Money& second_term) const
 {
-    if (currency_name.length() != 0 && second_term.currency_name.length() != 0 &&
-            currency_name.compare(second_term.currency_name) != 0)
-        throw monetary_exception(CURR_ADD_ERR);
+    VerifyOperation(second_term, CURR_ADD_ERR);
 
     Money tmp;
 
@@ -236,6 +228,14 @@ void Money::VerifyMemberValues() const
         throw monetary_exception(CENT_ERR);
 }
 
+void Money::VerifyOperation(const Money& second_term, const std::string error) const
+{
+    if (currency_name.length() != 0 && second_term.currency_name.length() != 0 &&
+            currency_name.compare(second_term.currency_name) != 0)
+        throw monetary_exception(error);
+    
+}
+
 std::ostream& Monetary::operator<<(std::ostream& os, const Money& rhs)
 {
     return rhs.print(os);
@@ -270,7 +270,7 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
             if (is.eof())
             {
                 is.setstate(std::ios_base::failbit);
-                return is;
+                throw monetary_exception(EOF_ERR);
             }
         }
 
@@ -286,7 +286,7 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
     if (buff == '-' || !isdigit(buff))
     {
         is.setstate(std::ios_base::failbit);
-        return is;
+        throw monetary_exception(CHAR_ERR);
     }
 
     // Läs till punkt, vitt tecken, bokstav eller strömmens slut.
@@ -312,14 +312,14 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
         if (is.eof())
         {
             is.setstate(std::ios_base::failbit);
-            return is;
+            throw monetary_exception(COMMA_ERR);
         }
 
         // Tecknet precis efter kommatecknet måste vara en siffra.
         if (!isdigit(is.peek()))
         {
             is.setstate(std::ios_base::failbit);
-            return is;
+            throw monetary_exception(COMMA_ERR);
         }
 
         for (short i = 0; i < 2; ++i)
@@ -339,7 +339,7 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
     // Om ett fel vi inte sett har inträffat i den underliggande strömmen
     // returnernar vi utan att konstruera ett Money-objekt.
     if (is.fail())
-        return is;
+        throw monetary_exception(UNKNOWN_STREAM_ERR); 
 
     rhs = Money(currency, units, cents);
 
