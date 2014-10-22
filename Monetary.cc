@@ -227,8 +227,12 @@ void Money::VerifyMemberValues() const
     if (currency_name.length() != 3 && currency_name.length() != 0)
         throw monetary_exception(CURR_ERR);
 
-    // Hundradelarna måste ligga mellan noll och 99.
-    if (curr_cents > 99)
+    // Vi är en solid bank som bara tillåters positivia konton.
+    if (curr_units < 0)
+      throw monetary_exception(SIGN_ERR);
+
+    // Hundradelarna måste ligga mellan noll och 99. 
+    if (curr_cents < 0 || curr_cents > 99)
         throw monetary_exception(CENT_ERR);
 }
 

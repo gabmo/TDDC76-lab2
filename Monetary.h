@@ -14,9 +14,10 @@ namespace Monetary
 #define CURR_CMP_ERR "Tv objekt med olika, specificerade, valutor kan ej jmfras!"
 #define SIGN_ERR "Valutan fÃ¥r ej ha negativa vÃ¤rden!"
 
-
-using Amount = unsigned long long;
-using CentAmount = unsigned short;
+// Även om vi inte ska kunna ha negativa tal tillåter vi det i datatypen 
+// för att kunna anpassa felhanteringen.
+using Amount = long long;
+using CentAmount = short;
 
 class Money
 {
@@ -48,6 +49,7 @@ public:
 
 private:
     std::string currency_name;
+ 
     Amount curr_units;
     CentAmount curr_cents;
 
