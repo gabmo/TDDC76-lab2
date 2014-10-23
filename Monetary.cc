@@ -310,7 +310,7 @@ std::istream& Monetary::operator>>(std::istream& is, Money& rhs)
         stringbuff += buff;
     }
 
-    units = atoi(stringbuff.c_str());
+    units = atol(stringbuff.c_str());
 
     // Rensa buffern.
     stringbuff = "";
